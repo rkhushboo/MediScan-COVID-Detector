@@ -1,0 +1,36 @@
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+myenv/
+venv/
+.venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code workspace settings and local files
+.vscode/
+*.code-workspace
+
+# Dataset files
+datasets/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Large model artifacts: use Git LFS or external storage for .h5 / .keras files
+# Uncomment these lines to exclude model files from git if you do not want to push them:
+# *.h5
+# *.keras
+# *.ckpt
+# *.pb
