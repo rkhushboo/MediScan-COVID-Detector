@@ -35,9 +35,9 @@ TARGET_SIZE = (256, 256)
 DATASET_ZIP_PATH = ROOT_DIR / "covid_dataset.zip"
 
 # Replace with your actual Google Drive File ID
-DATASET_FILE_ID = "1KITSeEUsB-GTOfmyYHKpkbkKWKUwlyJQ"
+DATASET_FILE_ID = "1KGu7l92TiVh8jKzmaLIZZE2DAu3jihYI"
 
-DATASET_URL = "https://drive.google.com/uc?export=download&id=1KITSeEUsB-GTOfmyYHKpkbkKWKUwlyJQ"
+DATASET_URL = "https://drive.google.com/drive/folders/1KGu7l92TiVh8jKzmaLIZZE2DAu3jihYI?usp=sharing"
 # -----------------------------------------------------------------------------
 # Utility functions
 # -----------------------------------------------------------------------------
@@ -133,7 +133,7 @@ def download_and_extract_dataset():
     try:
         st.info("Downloading dataset from Google Drive...")
 
-        url = f"https://drive.google.com/uc?id={DATASET_FILE_ID}"
+        url = DATASET_URL
 
         gdown.download(
             url,
