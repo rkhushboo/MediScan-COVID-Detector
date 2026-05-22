@@ -35,9 +35,9 @@ TARGET_SIZE = (256, 256)
 DATASET_ZIP_PATH = ROOT_DIR / "covid_dataset.zip"
 
 # Replace with your actual Google Drive File ID
-DATASET_FILE_ID = "1KGu7l92TiVh8jKzmaLIZZE2DAu3jihYI"
+DATASET_FILE_ID = "17o7carABp1Isl8SoylQco5douKYpY9G2"
 
-DATASET_URL = "https://drive.google.com/drive/folders/1KGu7l92TiVh8jKzmaLIZZE2DAu3jihYI?usp=sharing"
+DATASET_URL = "https://drive.google.com/file/d/17o7carABp1Isl8SoylQco5douKYpY9G2/view?usp=sharing"
 # -----------------------------------------------------------------------------
 # Utility functions
 # -----------------------------------------------------------------------------
