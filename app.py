@@ -37,7 +37,7 @@ DATASET_ZIP_PATH = ROOT_DIR / "covid_dataset.zip"
 # Replace with your actual Google Drive File ID
 DATASET_FILE_ID = "1KITSeEUsB-GTOfmyYHKpkbkKWKUwlyJQ"
 
-DATASET_URL = f"https://drive.google.com/uc?id={DATASET_FILE_ID}"
+DATASET_URL = "https://drive.google.com/uc?export=download&id=1KITSeEUsB-GTOfmyYHKpkbkKWKUwlyJQ"
 # -----------------------------------------------------------------------------
 # Utility functions
 # -----------------------------------------------------------------------------
