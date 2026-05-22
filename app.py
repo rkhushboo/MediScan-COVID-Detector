@@ -652,13 +652,7 @@ def render_performance_page() -> None:
 
 
 def get_last_conv_layer(model):
-    try:
-        base_model = model.get_layer("vgg16")
-        for layer in reversed(base_model.layers):
-            if isinstance(layer, tf.keras.layers.Conv2D):
-                return layer.name
-    except:
-        pass
+    
     return None
 
 
