@@ -2,7 +2,8 @@ import io
 import os
 import random
 from pathlib import Path
-
+import gdown
+import zipfile
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -27,6 +28,16 @@ DATASET_ROOT = ROOT_DIR / "datasets" / "Covid19-dataset"
 CLASS_NAMES = ["Covid", "Normal", "Viral Pneumonia"]
 TARGET_SIZE = (256, 256)
 
+# -----------------------------------------------------------------------------
+# Google Drive Dataset Configuration
+# -----------------------------------------------------------------------------
+
+DATASET_ZIP_PATH = ROOT_DIR / "covid_dataset.zip"
+
+# Replace with your actual Google Drive File ID
+DATASET_FILE_ID = "1KITSeEUsB-GTOfmyYHKpkbkKWKUwlyJQ"
+
+DATASET_URL = f"https://drive.google.com/uc?id={DATASET_FILE_ID}"
 # -----------------------------------------------------------------------------
 # Utility functions
 # -----------------------------------------------------------------------------
@@ -113,7 +124,35 @@ def get_model_path() -> Path:
         "No saved model found. Place best_tuned_model.keras or a fallback .h5 model in the project root."
     )
 
+@st.cache_resource(show_spinner=True)
+def download_and_extract_dataset():
+    """
+    Download dataset zip from Google Drive and extract it locally.
+    """
 
+    if DATASET_ROOT.exists():
+        return
+
+    try:
+        st.info("Downloading dataset from Google Drive...")
+
+        gdown.download(
+            DATASET_URL,
+            str(DATASET_ZIP_PATH),
+            quiet=False
+        )
+
+        st.info("Extracting dataset...")
+
+        with zipfile.ZipFile(DATASET_ZIP_PATH, 'r') as zip_ref:
+            zip_ref.extractall(ROOT_DIR / "datasets")
+
+        st.success("Dataset downloaded successfully.")
+
+    except Exception as e:
+        st.error(f"Dataset download failed: {e}")
+        st.stop()
+      
 def load_image_from_bytes(image_bytes: bytes) -> Image.Image:
     """Load an uploaded image from bytes into a PIL Image."""
     try:
@@ -725,7 +764,7 @@ def main() -> None:
         layout="wide",
     )
     apply_custom_styles()
-
+    download_and_extract_dataset()
     st.sidebar.title("COVID Inference App")
     st.sidebar.markdown("A polished dashboard for CNN-based chest X-ray screening.")
     pages = [
