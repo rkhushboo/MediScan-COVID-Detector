@@ -658,11 +658,9 @@ def get_last_conv_layer(model):
 
 def make_gradcam_heatmap(model, image_array, last_conv_layer_name):
 
-   st.subheader("Grad-CAM Activation Map")
+    st.subheader("Grad-CAM Activation Map")
 
-st.info(
-    "Grad-CAM visualization is temporarily disabled for deployed models."
-)
+    st.info("Grad-CAM visualization is temporarily disabled for deployed models.")
 
 def overlay_heatmap(image: Image.Image, heatmap: np.ndarray, alpha: float = 0.4) -> Image.Image:
     """Overlay the Grad-CAM heatmap on the original image."""
