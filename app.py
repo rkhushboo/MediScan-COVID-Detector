@@ -24,7 +24,7 @@ MODEL_CANDIDATES = [
     ROOT_DIR / "basic_cnn_tuned.keras",
     ROOT_DIR / "vgg16_aug_tuned.keras",
 ]
-DATASET_ROOT = ROOT_DIR / "datasets" / "Covid19-dataset"
+DATASET_ROOT = ROOT_DIR / "datasets" / "datasets" / "Covid19-dataset"
 CLASS_NAMES = ["Covid", "Normal", "Viral Pneumonia"]
 TARGET_SIZE = (256, 256)
 
