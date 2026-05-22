@@ -652,30 +652,33 @@ def render_performance_page() -> None:
 
 
 def get_last_conv_layer(model):
-
-    for layer in reversed(model.layers):
-
-        if isinstance(layer, tf.keras.layers.Conv2D):
-            return layer.name
-
-        if hasattr(layer, "layers"):
-
-            for nested_layer in reversed(layer.layers):
-
-                if isinstance(nested_layer, tf.keras.layers.Conv2D):
-                    return nested_layer.name
-
+    try:
+        base_model = model.get_layer("vgg16")
+        for layer in reversed(base_model.layers):
+            if isinstance(layer, tf.keras.layers.Conv2D):
+                return layer.name
+    except:
+        pass
     return None
 
 
 def make_gradcam_heatmap(model, image_array, last_conv_layer_name):
 
     try:
-        last_conv_layer = model.get_layer(last_conv_layer_name)
 
+        # Access VGG16 nested model
+        base_model = model.get_layer("vgg16")
+
+        # Access internal conv layer
+        last_conv_layer = base_model.get_layer(last_conv_layer_name)
+
+        # Create GradCAM model
         grad_model = tf.keras.models.Model(
             inputs=model.inputs,
-            outputs=[last_conv_layer.output, model.output]
+            outputs=[
+                last_conv_layer.output,
+                model.output
+            ]
         )
 
         with tf.GradientTape() as tape:
@@ -698,7 +701,7 @@ def make_gradcam_heatmap(model, image_array, last_conv_layer_name):
 
         heatmap = tf.maximum(heatmap, 0)
 
-        heatmap = heatmap / (tf.reduce_max(heatmap) + 1e-8)
+        heatmap /= tf.reduce_max(heatmap) + 1e-8
 
         return heatmap.numpy()
 
@@ -707,7 +710,6 @@ def make_gradcam_heatmap(model, image_array, last_conv_layer_name):
         st.error(f"Grad-CAM failed: {e}")
 
         return np.zeros((10, 10))
-
 
 def overlay_heatmap(image: Image.Image, heatmap: np.ndarray, alpha: float = 0.4) -> Image.Image:
     """Overlay the Grad-CAM heatmap on the original image."""
