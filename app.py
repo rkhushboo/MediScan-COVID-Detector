@@ -20,8 +20,8 @@ from sklearn.metrics import (accuracy_score, classification_report,
 # -----------------------------------------------------------------------------
 ROOT_DIR = Path(__file__).parent
 MODEL_CANDIDATES = [
-    ROOT_DIR / "best_tuned_model.keras",
-    ROOT_DIR / "basic_cnn_tuned.keras",
+    #ROOT_DIR / "best_tuned_model.keras",
+    #ROOT_DIR / "basic_cnn_tuned.keras",
     ROOT_DIR / "vgg16_aug_tuned.keras",
 ]
 DATASET_ROOT = ROOT_DIR / "datasets" / "datasets" / "Covid19-dataset"
