@@ -20,8 +20,8 @@ from sklearn.metrics import (accuracy_score, classification_report,
 ROOT_DIR = Path(__file__).parent
 MODEL_CANDIDATES = [
     ROOT_DIR / "best_tuned_model.keras",
-    ROOT_DIR / "basic_cnn_tuned.h5",
-    ROOT_DIR / "vgg16_aug_tuned.h5",
+    ROOT_DIR / "basic_cnn_tuned.keras",
+    ROOT_DIR / "vgg16_aug_tuned.keras",
 ]
 DATASET_ROOT = ROOT_DIR / "datasets" / "Covid19-dataset"
 CLASS_NAMES = ["Covid", "Normal", "Viral Pneumonia"]
@@ -89,11 +89,20 @@ def apply_custom_styles() -> None:
 
 @st.cache_resource(show_spinner=False)
 def load_model_resource():
-    """Load the best available model from disk and cache it."""
-    model_path = get_model_path()
-    model = tf.keras.models.load_model(model_path)
-    return model
 
+    model_path = get_model_path()
+
+    try:
+        model = tf.keras.models.load_model(
+            model_path,
+            compile=False
+        )
+
+        return model
+
+    except Exception as e:
+        st.error(f"Model loading failed: {e}")
+        st.stop()
 
 def get_model_path() -> Path:
     """Detect the best available saved model file."""
