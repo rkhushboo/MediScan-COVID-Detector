@@ -20,8 +20,6 @@ from sklearn.metrics import (accuracy_score, classification_report,
 # -----------------------------------------------------------------------------
 ROOT_DIR = Path(__file__).parent
 MODEL_CANDIDATES = [
-    #ROOT_DIR / "best_tuned_model.keras",
-    #ROOT_DIR / "basic_cnn_tuned.keras",
     ROOT_DIR / "vgg16_aug_tuned.keras",
 ]
 DATASET_ROOT = ROOT_DIR / "datasets" / "datasets" / "Covid19-dataset"
@@ -121,7 +119,7 @@ def get_model_path() -> Path:
         if candidate.exists():
             return candidate
     raise FileNotFoundError(
-        "No saved model found. Place best_tuned_model.keras or a fallback .h5 model in the project root."
+        "No saved model found."
     )
 
 @st.cache_resource(show_spinner=True)
@@ -131,8 +129,7 @@ def download_and_extract_dataset():
         return
 
     try:
-        st.info("Downloading dataset from Google Drive...")
-
+       
         url = DATASET_URL
 
         gdown.download(
@@ -141,12 +138,12 @@ def download_and_extract_dataset():
             quiet=False
         )
 
-        st.info("Extracting dataset...")
+        
 
         with zipfile.ZipFile(DATASET_ZIP_PATH, "r") as zip_ref:
             zip_ref.extractall(ROOT_DIR / "datasets")
 
-        st.success("Dataset downloaded successfully.")
+       
 
     except Exception as e:
         st.error(f"Dataset download failed: {e}")
@@ -373,7 +370,7 @@ def render_home_page(model_path: Path) -> None:
 
     metrics = st.columns(4)
     with metrics[0]:
-        st.metric(label="Selected Model", value=model_path.name)
+        st.metric(label="Selected Model", value="VGG-16")
     with metrics[1]:
         st.metric(label="Target Classes", value=len(CLASS_NAMES))
     with metrics[2]:
@@ -654,34 +651,62 @@ def render_performance_page() -> None:
     display_footer()
 
 
-def get_last_conv_layer(model: tf.keras.Model):
-    """Return the last convolutional layer from a model if available."""
+def get_last_conv_layer(model):
+
     for layer in reversed(model.layers):
+
         if isinstance(layer, tf.keras.layers.Conv2D):
             return layer.name
+
         if hasattr(layer, "layers"):
-            nested = get_last_conv_layer(layer)
-            if nested is not None:
-                return nested
+
+            for nested_layer in reversed(layer.layers):
+
+                if isinstance(nested_layer, tf.keras.layers.Conv2D):
+                    return nested_layer.name
+
     return None
 
 
 def make_gradcam_heatmap(model, image_array, last_conv_layer_name):
-    """Generate a Grad-CAM heatmap for the loaded model and input image."""
-    grad_model = tf.keras.models.Model(
-        [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
-    )
-    with tf.GradientTape() as tape:
-        conv_outputs, predictions = grad_model(image_array)
-        predicted_index = tf.argmax(predictions[0])
-        loss = predictions[:, predicted_index]
-    grads = tape.gradient(loss, conv_outputs)
-    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-    conv_outputs = conv_outputs[0]
-    heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
-    heatmap = tf.squeeze(heatmap)
-    heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap + 1e-9)
-    return heatmap.numpy()
+
+    try:
+        last_conv_layer = model.get_layer(last_conv_layer_name)
+
+        grad_model = tf.keras.models.Model(
+            inputs=model.inputs,
+            outputs=[last_conv_layer.output, model.output]
+        )
+
+        with tf.GradientTape() as tape:
+
+            conv_outputs, predictions = grad_model(image_array)
+
+            predicted_index = tf.argmax(predictions[0])
+
+            loss = predictions[:, predicted_index]
+
+        grads = tape.gradient(loss, conv_outputs)
+
+        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+
+        conv_outputs = conv_outputs[0]
+
+        heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
+
+        heatmap = tf.squeeze(heatmap)
+
+        heatmap = tf.maximum(heatmap, 0)
+
+        heatmap = heatmap / (tf.reduce_max(heatmap) + 1e-8)
+
+        return heatmap.numpy()
+
+    except Exception as e:
+
+        st.error(f"Grad-CAM failed: {e}")
+
+        return np.zeros((10, 10))
 
 
 def overlay_heatmap(image: Image.Image, heatmap: np.ndarray, alpha: float = 0.4) -> Image.Image:
@@ -743,7 +768,7 @@ def render_contact_page() -> None:
     st.title("Contact & Notes")
     st.write("Use this dashboard to share results, export reports, and support rapid image-based screening.")
     st.markdown("**Project Folder:** `Covid_19`")
-    st.markdown("**Saved Model:** best_tuned_model.keras (or fallback)\n**Notebook:** `Richa_K_Batch_13_ANN_CNN_Mini_Project.ipynb`")
+    st.markdown("**Saved Model:** VGG-16 Augmentated and Hypertuned \n**Notebook:** `Richa_K_Batch_13_ANN_CNN_Mini_Project.ipynb`")
     st.markdown(
         "If you need to deploy this app to Streamlit Cloud, run `streamlit run app.py` from the project root."
     )
