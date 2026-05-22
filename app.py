@@ -138,8 +138,7 @@ def download_and_extract_dataset():
         gdown.download(
             url,
             str(DATASET_ZIP_PATH),
-            quiet=False,
-            fuzzy=True
+            quiet=False
         )
 
         st.info("Extracting dataset...")
