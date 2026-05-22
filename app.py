@@ -126,9 +126,6 @@ def get_model_path() -> Path:
 
 @st.cache_resource(show_spinner=True)
 def download_and_extract_dataset():
-    """
-    Download dataset zip from Google Drive and extract it locally.
-    """
 
     if DATASET_ROOT.exists():
         return
@@ -136,15 +133,18 @@ def download_and_extract_dataset():
     try:
         st.info("Downloading dataset from Google Drive...")
 
+        url = f"https://drive.google.com/uc?id={DATASET_FILE_ID}"
+
         gdown.download(
-            DATASET_URL,
+            url,
             str(DATASET_ZIP_PATH),
-            quiet=False
+            quiet=False,
+            fuzzy=True
         )
 
         st.info("Extracting dataset...")
 
-        with zipfile.ZipFile(DATASET_ZIP_PATH, 'r') as zip_ref:
+        with zipfile.ZipFile(DATASET_ZIP_PATH, "r") as zip_ref:
             zip_ref.extractall(ROOT_DIR / "datasets")
 
         st.success("Dataset downloaded successfully.")
