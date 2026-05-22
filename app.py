@@ -664,52 +664,11 @@ def get_last_conv_layer(model):
 
 def make_gradcam_heatmap(model, image_array, last_conv_layer_name):
 
-    try:
+   st.subheader("Grad-CAM Activation Map")
 
-        # Access VGG16 nested model
-        base_model = model.get_layer("vgg16")
-
-        # Access internal conv layer
-        last_conv_layer = base_model.get_layer(last_conv_layer_name)
-
-        # Create GradCAM model
-        grad_model = tf.keras.models.Model(
-            inputs=model.inputs,
-            outputs=[
-                last_conv_layer.output,
-                model.output
-            ]
-        )
-
-        with tf.GradientTape() as tape:
-
-            conv_outputs, predictions = grad_model(image_array)
-
-            predicted_index = tf.argmax(predictions[0])
-
-            loss = predictions[:, predicted_index]
-
-        grads = tape.gradient(loss, conv_outputs)
-
-        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-
-        conv_outputs = conv_outputs[0]
-
-        heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
-
-        heatmap = tf.squeeze(heatmap)
-
-        heatmap = tf.maximum(heatmap, 0)
-
-        heatmap /= tf.reduce_max(heatmap) + 1e-8
-
-        return heatmap.numpy()
-
-    except Exception as e:
-
-        st.error(f"Grad-CAM failed: {e}")
-
-        return np.zeros((10, 10))
+st.info(
+    "Grad-CAM visualization is temporarily disabled for deployed models."
+)
 
 def overlay_heatmap(image: Image.Image, heatmap: np.ndarray, alpha: float = 0.4) -> Image.Image:
     """Overlay the Grad-CAM heatmap on the original image."""
