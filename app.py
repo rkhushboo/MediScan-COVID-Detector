@@ -701,7 +701,6 @@ def render_visualization_page() -> None:
 
     last_conv = get_last_conv_layer(model)
     if last_conv is not None and sample_images:
-        st.subheader("Grad-CAM Activation Map")
         image_name, image = sample_images[0]
         image_array = preprocess_image(image)
         heatmap = make_gradcam_heatmap(model, image_array, last_conv)
